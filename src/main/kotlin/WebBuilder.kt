@@ -1,3 +1,5 @@
+import java.io.File
+
 fun main(args: Array<String>) {
     try {
         val arg: ArgParser = ArgParser(args)
@@ -7,6 +9,7 @@ fun main(args: Array<String>) {
         cleanDistributionDirectory(config)
 
         buildHtml(config)
+        copyStaticFiles(config)
     }
     catch (e: ArgParserException) {
         System.err.println(e.message)
@@ -25,4 +28,14 @@ fun buildHtml(config: Config) {
     config.srcDir.walk()
             .filter { it.isFile && it.extension == "html"}
             .forEach { htmlBuilder.exec(it, htmlBuilder::expandMacros) }
+}
+
+// Copy files that do not need a transformation
+fun copyStaticFiles(config: Config) {
+    config.srcDir.walk()
+            .filter { it.isFile && it.extension in listOf("css", "png", "gif", "txt", "pdf") }
+            .forEach {  val distFile: File = config.distFileOf(it)
+                distFile.parentFile.mkdirs() // create a directory if not exists
+                it.copyTo(distFile)
+            }
 }
