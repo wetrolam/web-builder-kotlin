@@ -5,6 +5,8 @@ fun main(args: Array<String>) {
         println("---- base directory: \"${config.baseDir}\" ----")
 
         cleanDistributionDirectory(config)
+
+        buildHtml(config)
     }
     catch (e: ArgParserException) {
         System.err.println(e.message)
@@ -15,4 +17,12 @@ fun main(args: Array<String>) {
 fun cleanDistributionDirectory(config: Config) {
     config.distDir.deleteRecursively()
     config.distDir.mkdir()
+}
+
+// Create html files
+fun buildHtml(config: Config) {
+    val htmlBuilder: HtmlBuilder = HtmlBuilder(config)
+    config.srcDir.walk()
+            .filter { it.isFile && it.extension == "html"}
+            .forEach { htmlBuilder.exec(it, htmlBuilder::expandMacros) }
 }
