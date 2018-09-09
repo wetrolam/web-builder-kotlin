@@ -1,7 +1,8 @@
 fun main(args: Array<String>) {
     try {
         val arg: ArgParser = ArgParser(args)
-        println("---- base directory: \"${arg.getBasePath()}\" ----")
+        val config: Config = Config(arg.getBasePath())
+        println("---- base directory: \"${config.baseDir}\" ----")
     }
     catch (e: ArgParserException) {
         System.err.println(e.message)
