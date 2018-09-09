@@ -17,13 +17,13 @@ fun main(args: Array<String>) {
 }
 
 // Create a fresh distribution directory (an output directory in a user web project)
-fun cleanDistributionDirectory(config: Config) {
+private fun cleanDistributionDirectory(config: Config) {
     config.distDir.deleteRecursively()
     config.distDir.mkdir()
 }
 
 // Create html files
-fun buildHtml(config: Config) {
+private fun buildHtml(config: Config) {
     val htmlBuilder: HtmlBuilder = HtmlBuilder(config)
     config.srcDir.walk()
             .filter { it.isFile && it.extension == "html"}
@@ -31,7 +31,7 @@ fun buildHtml(config: Config) {
 }
 
 // Copy files that do not need a transformation
-fun copyStaticFiles(config: Config) {
+private fun copyStaticFiles(config: Config) {
     config.srcDir.walk()
             .filter { it.isFile && it.extension in listOf("css", "png", "gif", "txt", "pdf") }
             .forEach {  val distFile: File = config.distFileOf(it)
