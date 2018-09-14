@@ -4,7 +4,7 @@ import java.io.File
 class HtmlBuilder(val config: Config) {
 
     // Html template content
-    private val baseText: String = config.srcDir.resolve("html.template").readText()
+    private val baseText: String = config.configDir.resolve("template.html").readText()
 
     // Build a html file from 'srcFile'. Use 'op' for processig the input file
     fun exec(srcFile: File, op: (String)->String) {
