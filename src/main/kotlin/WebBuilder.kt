@@ -26,15 +26,22 @@ private fun cleanDistributionDirectory(config: Config) {
 private fun buildHtml(config: Config) {
     val htmlBuilder: HtmlBuilder = HtmlBuilder(config)
     config.srcDir.walk()
-            .filter { it.isFile && it.extension == "html"}
-            .forEach { htmlBuilder.exec(it, htmlBuilder::expandMacros) }
+            .filter {
+                it.isFile && it.extension == "html"
+            }
+            .forEach {
+                htmlBuilder.exec(it, htmlBuilder::expandMacros)
+            }
 }
 
 // Copy files that do not need a transformation
 private fun copyStaticFiles(config: Config) {
     config.srcDir.walk()
-            .filter { it.isFile && it.extension in listOf("css", "png", "gif", "txt", "pdf") }
-            .forEach {  val distFile: File = config.distFileOf(it)
+            .filter {
+                it.isFile && it.extension in listOf("css", "png", "gif", "txt", "pdf")
+            }
+            .forEach {
+                val distFile: File = config.distFileOf(it)
                 distFile.parentFile.mkdirs() // create a directory if not exists
                 it.copyTo(distFile)
             }
