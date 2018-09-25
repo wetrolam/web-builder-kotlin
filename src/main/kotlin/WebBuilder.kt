@@ -24,13 +24,15 @@ private fun cleanDistributionDirectory(config: Config) {
 
 // Create html files
 private fun buildHtml(config: Config) {
-    val htmlBuilder: HtmlBuilder = HtmlBuilder(config)
     config.srcDir.walk()
             .filter {
                 it.isFile && it.extension == "html"
             }
             .forEach {
-                htmlBuilder.exec(it, htmlBuilder::expandMacros)
+                val html: String = HtmlBuilder(config, it).toHtml()
+                val distFile: File = config.distFileOf(it)
+                distFile.parentFile.mkdirs() // create a directory if not exists
+                distFile.writeText(html)
             }
 }
 

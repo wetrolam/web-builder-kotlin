@@ -17,5 +17,3 @@ class ArgParser(val args: Array<String>) {
         }
     }
 }
-
-
