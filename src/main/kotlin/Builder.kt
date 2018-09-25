@@ -1,6 +1,6 @@
 import java.io.File
 
-open class Builder (
+abstract class Builder (
         protected val config: Config,
         protected val file: File) {
 
