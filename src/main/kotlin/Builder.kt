@@ -6,7 +6,7 @@ abstract class Builder (
         protected val file: File) {
 
     // Html template
-    protected val baseText: String = getHtmlTemplate()
+    private val htmlTemplate: String = getHtmlTemplate()
 
     protected data class HtmlData (
             val body: String,
@@ -16,7 +16,7 @@ abstract class Builder (
     protected fun wrap(htmlData: HtmlData): String {
         // append the file name to <title>
         val titleRegex: Regex = Regex("(?<=<title>).*(?=</title>)", RegexOption.DOT_MATCHES_ALL)
-        val titleAdjusted: String = baseText.replace(titleRegex, "$0 - ${file.name}")
+        val titleAdjusted: String = htmlTemplate.replace(titleRegex, "$0 - ${file.name}")
 
         // add internal <style>
         val styleAdjusted: String =
