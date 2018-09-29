@@ -1,11 +1,12 @@
 import java.io.File
+import java.io.IOException
 
 abstract class Builder (
         protected val config: Config,
         protected val file: File) {
 
     // Html template
-    protected val baseText: String = config.configDir.resolve("template.html").readText()
+    protected val baseText: String = getHtmlTemplate()
 
     protected data class HtmlData (
             val body: String,
@@ -32,5 +33,22 @@ abstract class Builder (
         val bodyAdjusted: String = styleAdjusted.replace(bodyRegex, "\n\n${htmlData.body}\n\n")
 
         return bodyAdjusted
+    }
+
+    private fun getHtmlTemplate(): String {
+        return try {
+            config.configDir.resolve("template.html").readText()
+        }
+        catch (exception: IOException) {
+            """
+            <!DOCTYPE html>
+            <html>
+                <head>
+                </head>
+                <body>
+                </body>
+            </html>
+            """.trimIndent()
+        }
     }
 }
