@@ -1,4 +1,5 @@
 import java.io.File
+import java.io.IOException
 import java.util.*
 
 // Variant of C/C++ source file or a line
@@ -142,6 +143,7 @@ private class Line (text: String){
 // A builder for several C/C++ source code variants
 class CppBuilder(config: Config, file: File) : Builder(config, file) {
     private val lines: List<Line>
+    private val cppStyle: String = getCppStyle()
 
     init {
         lines = parse(file.readText())
@@ -196,9 +198,7 @@ class CppBuilder(config: Config, file: File) : Builder(config, file) {
                     it.toHtml()
                 }
 
-        val css: String = config.configDir.resolve("cpp.css").readText()
-
-        return wrap(HtmlData(body, css))
+        return wrap(HtmlData(body, cppStyle))
     }
 
     fun getHighlightedSolution(): String {
@@ -230,9 +230,16 @@ class CppBuilder(config: Config, file: File) : Builder(config, file) {
         return wrap(htmlData)
     }
 
-    private fun generateSolutionCss(): String {
-        val staticCss: String = config.configDir.resolve("cpp.css").readText()
+    private fun getCppStyle(): String {
+        return try {
+            config.configDir.resolve("cpp.css").readText()
+        }
+        catch (exception: IOException) {
+            defaultCppStyle
+        }
+    }
 
+    private fun generateSolutionCss(): String {
         val dynamicCss: String =
                 lines.filter {
                     it.switch
@@ -255,7 +262,7 @@ class CppBuilder(config: Config, file: File) : Builder(config, file) {
                 """.trimIndent()
                 }
 
-        return staticCss + "\n" + dynamicCss
+        return cppStyle + "\n" + dynamicCss
     }
 
     // Return true if the source file contains at least one specific line, else return false
@@ -379,3 +386,45 @@ private val preprocessor: Array<String> = arrayOf(
     "error",
     "pragma"
 )
+
+private val defaultCppStyle: String = """
+    .keyword {
+        color: blue;
+    }
+    .comment {
+        color: green;
+        font-style: italic;
+    }
+    .preprocessor {
+        color: blue;
+        font-weight: bold;
+    }
+    .data {
+        color: red;
+    }
+
+    label {
+        background-color: yellow;
+        box-shadow: inset 0 2px 3px rgba(255,255,255,0.2), inset 0 -2px 3px rgba(0,0,0,0.2);
+        border-radius: 4px;
+        display: inline-block;
+        padding: 2px 5px;
+        cursor: pointer;
+    }
+
+    input + label:after {
+        content: "show solution";
+    }
+
+    input:checked + label:after {
+        content: "hide solution";
+    }
+
+    .assignment {
+        background: linear-gradient(to right,rgb(240,240,240) 1%, white 50%);
+    }
+
+    .solution {
+        background: linear-gradient(to right,yellow 1%, white 50%);
+    }
+""".trimIndent()
