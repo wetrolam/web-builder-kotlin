@@ -41,7 +41,7 @@ private fun buildHtml(config: Config) {
 private fun copyStaticFiles(config: Config) {
     config.srcDir.walk()
             .filter {
-                it.isFile && it.extension in listOf("css", "png", "gif", "txt", "pdf")
+                it.isFile && it.extension in listOf("css", "png", "gif", "svg", "txt", "pdf")
             }
             .forEach {
                 val distFile: File = config.distFileOf(it)
