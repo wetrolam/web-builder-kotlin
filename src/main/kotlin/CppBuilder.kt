@@ -96,10 +96,12 @@ private class Line (text: String){
 
     init {
         val matchResult: MatchResult? = regex.find(text)
-        content = if(matchResult == null)
+        content = if(matchResult == null) {
                     text
-                else
+                }
+                else {
                     text.replace(regex, "")
+                }
         variant = try {
                     Variant.findByRegex(matchResult?.groupValues?.get(1) ?: "")
                 }
