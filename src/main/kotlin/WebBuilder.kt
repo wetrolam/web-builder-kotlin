@@ -10,6 +10,7 @@ fun main(args: Array<String>) {
 
         buildHtml(config)
         buildMarkdown(config)
+        copyConfigurationStaticFiles(config)
         copyStaticFiles(config)
         processCpp(config)
     }
@@ -52,7 +53,20 @@ private fun buildMarkdown(config: Config) {
             }
 }
 
-// Copy files that do not need a transformation
+// Copy css and image files from the configuration directory ('webProjectDirectory/config')
+private fun copyConfigurationStaticFiles(config: Config){
+    config.configDir.walk()
+            .filter {
+                it.isFile && it.extension in listOf("css", "png", "gif", "svg")
+            }
+            .forEach {
+                var relativeFilePath: File = it.relativeTo(config.configDir)
+                val distFile: File = config.distDir.resolve(relativeFilePath)
+                it.copyTo(distFile)
+            }
+}
+
+// Copy files from source directory ('webProjectDirectory/src') that do not need a transformation
 private fun copyStaticFiles(config: Config) {
     config.srcDir.walk()
             .filter {
