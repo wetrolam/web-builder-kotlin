@@ -9,6 +9,7 @@ fun main(args: Array<String>) {
         cleanDistributionDirectory(config)
 
         buildHtml(config)
+        buildMarkdown(config)
         copyStaticFiles(config)
         processCpp(config)
     }
@@ -23,7 +24,7 @@ private fun cleanDistributionDirectory(config: Config) {
     config.distDir.mkdir()
 }
 
-// Create html files
+// Create html files from html files
 private fun buildHtml(config: Config) {
     config.srcDir.walk()
             .filter {
@@ -32,6 +33,20 @@ private fun buildHtml(config: Config) {
             .forEach {
                 val html: String = HtmlBuilder(config, it).toHtml()
                 val distFile: File = config.distFileOf(it)
+                distFile.parentFile.mkdirs() // create a directory if not exists
+                distFile.writeText(html)
+            }
+}
+
+// Create html files from markdown files
+private fun buildMarkdown(config: Config) {
+    config.srcDir.walk()
+            .filter {
+                it.isFile && it.extension == "md"
+            }
+            .forEach {
+                val html: String = MarkdownBuilder(config, it).toHtml()
+                val distFile: File = File(config.distFileOf(it).path.replaceAfterLast(".","html"))
                 distFile.parentFile.mkdirs() // create a directory if not exists
                 distFile.writeText(html)
             }
