@@ -49,10 +49,11 @@ class MarkdownBuilder(config: Config, file: File): Builder(config, file) {
 
         // replace other custom marks
         val replacements: Map<String, String> = mapOf(
-                "#DU" to "Domáca úloha",
-                "#CV" to "Na cvičení",
-                "#university" to "(databaza: university)",
-                "#sakila" to "(databaza: sakila)"
+                "#DU" to "<span class=\"homework\">Domáca úloha</span>",
+                "#CV" to "<span class=\"lecture\">Na cvičení</span>",
+                "#university" to "<span class=\"db_university\">(databáza: <i class=\"fas fa-university\"></i> univerzita)</span>",
+                "#pagila" to "<span class=\"db_pagila\">(databáza: <i class=\"fas fa-video\"></i> pagila)</span>",
+                "#restaurant" to "<span class=\"db_restaurant\">(databáza: <i class=\"fas fa-utensils\"></i> reštaurácia)</span>"
         )
         var tmp: String = solution
         replacements.forEach{
