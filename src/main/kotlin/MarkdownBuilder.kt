@@ -1,41 +1,37 @@
-import java.io.*
+import java.io.File
+import java.io.IOException
+import com.vladsch.flexmark.html.HtmlRenderer
+import com.vladsch.flexmark.util.data.MutableDataSet
+import com.vladsch.flexmark.parser.Parser
+import com.vladsch.flexmark.util.ast.Node
 
 class MarkdownBuilder(config: Config, file: File): Builder(config, file) {
 
     fun toHtml(): String {
-        val input: String = file.readText()
-        val pandoc: String = executePandoc(input)
-        val customMarks: String = transformCusomMarks(pandoc)
-        return customMarks // return wrap(HtmlData(customMarks))
+        val markdown: String = file.readText()
+        val html: String = markdownToHtml(markdown)
+        return wrap(HtmlData(html, getMarkdownStyle()))
     }
 
-    private fun executePandoc(input: String): String {
-        val process: Process = ProcessBuilder(
-                    "pandoc",
-                    "-f", "markdown",
-                    "-t", "html",
-                    "-s",
-                    "--metadata-file", config.configDir.resolve("config.yaml").absolutePath,
-                    "--css", "md.css"
-                )
-                .redirectInput(ProcessBuilder.Redirect.PIPE)
-                .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                .redirectError(ProcessBuilder.Redirect.PIPE)
-                .start()
+    private fun markdownToHtml(input: String): String {
+        val options: MutableDataSet = MutableDataSet()
 
-        process.outputStream.write(input.toByteArray())
-        process.outputStream.bufferedWriter().close()
+        val parser: Parser = Parser.builder(options).build()
+        val renderer: HtmlRenderer = HtmlRenderer.builder(options).build()
 
-        // TODO stdout and stderr can be too long
-        val output: String = process.inputStream.bufferedReader().readText()
-        val error: String = process.errorStream.bufferedReader().readText()
+        val document: Node = parser.parse(input)
+        val html: String = renderer.render(document)
 
-        val status: Int = process.waitFor()
-        if(status != 0) {
-            System.err.println(error)
+        return html
+    }
+
+    private fun getMarkdownStyle(): String {
+        return try {
+            config.configDir.resolve("md.css").readText()
         }
-
-        return output
+        catch (exception: IOException) {
+            defaultMarkdownStyle
+        }
     }
 
     private fun transformCusomMarks(input: String): String {
@@ -63,3 +59,9 @@ class MarkdownBuilder(config: Config, file: File): Builder(config, file) {
         return tmp
     }
 }
+
+private val defaultMarkdownStyle: String = """
+    h1 {
+        color: blue;
+    }
+""".trimIndent()
