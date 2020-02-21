@@ -4,6 +4,7 @@ import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.util.data.MutableDataSet
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.ast.Node
+import com.vladsch.flexmark.ext.tables.TablesExtension
 
 class MarkdownBuilder(config: Config, file: File): Builder(config, file) {
 
@@ -15,6 +16,10 @@ class MarkdownBuilder(config: Config, file: File): Builder(config, file) {
 
     private fun markdownToHtml(input: String): String {
         val options: MutableDataSet = MutableDataSet()
+        options.set(Parser.EXTENSIONS, listOf(
+                TablesExtension.create()
+            )
+        )
 
         val parser: Parser = Parser.builder(options).build()
         val renderer: HtmlRenderer = HtmlRenderer.builder(options).build()
