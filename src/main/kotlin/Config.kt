@@ -1,10 +1,20 @@
 import java.io.File
+import java.io.InputStream
+import org.yaml.snakeyaml.Yaml
+import org.yaml.snakeyaml.constructor.Constructor
 
 class Config(val baseDir: File) {
 
     val srcDir: File = this.baseDir.resolve("src")
     val distDir: File = baseDir.resolve("dist")
     val configDir: File = baseDir.resolve("config")
+    val html: HtmlConfig = loadConfig<HtmlConfig>("html.yaml")
+
+    private inline fun <reified T>loadConfig(fileName: String): T {
+        val yaml: Yaml = Yaml(Constructor(T::class.java))
+        val stream: InputStream = configDir.resolve(fileName).inputStream()
+        return yaml.load(stream)
+    }
 
     /**
      * Return distribution version of 'srcFile'.

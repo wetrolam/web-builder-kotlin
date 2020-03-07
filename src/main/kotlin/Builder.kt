@@ -1,12 +1,10 @@
 import java.io.File
 import java.io.IOException
+import java.lang.StringBuilder
 
 abstract class Builder (
         protected val config: Config,
         protected val file: File) {
-
-    // Html template
-    private val htmlTemplate: String = getHtmlTemplate()
 
     protected data class HtmlData (
             val body: String,
@@ -14,41 +12,50 @@ abstract class Builder (
     )
 
     protected fun wrap(htmlData: HtmlData): String {
-        // append the file name to <title>
-        val titleRegex: Regex = Regex("(?<=<title>).*(?=</title>)", RegexOption.DOT_MATCHES_ALL)
-        val titleAdjusted: String = htmlTemplate.replace(titleRegex, "$0 - ${file.name}")
+        val html: StringBuilder = StringBuilder()
 
-        // add internal <style>
-        val styleAdjusted: String =
-                if(htmlData.internalCss != null) {
-                    val styleRegex: Regex = Regex("(?=</head>)", RegexOption.DOT_MATCHES_ALL)
-                    titleAdjusted.replace(styleRegex, "\n<style>\n${htmlData.internalCss}\n</style>\n")
-                }
-                else {
-                    titleAdjusted
-                }
+        html.append("<!DOCTYPE html>\n")
+        html.append("<html>\n")
+        html.append("    <head>\n")
+        html.append("        <meta charset=\"${config.html.charset}\">\n")
+        html.append("        <title>${config.html.title} - ${file.nameWithoutExtension}</title>\n")
 
-        // fill <body>
-        val bodyRegex: Regex = Regex("(?<=<body>).*(?=</body>)", RegexOption.DOT_MATCHES_ALL)
-        val bodyAdjusted: String = styleAdjusted.replace(bodyRegex, "\n\n${htmlData.body}\n\n")
+        if(config.html.author !="") {
+            html.append("        <meta name=\"author\" content=\"${config.html.author}\">\n")
+        }
 
-        return bodyAdjusted
+        val favicon: File = relativePath(file, config.html.favicon)
+        html.append("        <link rel=\"shortcut icon\" type=\"image/png\" href=\"${favicon}\"/>\n")
+
+        getConfigCssFiles().forEach{
+            val css: File = relativePath(file, it)
+            html.append("        <link rel=\"stylesheet\" type=\"text/css\" href=\"${css}\">\n")
+        }
+
+        if(htmlData.internalCss !=null) {
+            html.append("        <style>\n${htmlData.internalCss}\n        </style>\n")
+        }
+
+        html.append("    </head>\n")
+        html.append("    <body>\n")
+        html.append("${htmlData.body}\n")
+        html.append("    </body>\n")
+        html.append("</html>\n")
+
+        return html.toString()
     }
 
-    private fun getHtmlTemplate(): String {
-        return try {
-            config.configDir.resolve("template.html").readText()
-        }
-        catch (exception: IOException) {
-            """
-            <!DOCTYPE html>
-            <html>
-                <head>
-                </head>
-                <body>
-                </body>
-            </html>
-            """.trimIndent()
-        }
+    private fun relativePath(from: File, to: File): File {
+        return config.srcDir.relativeTo(from.parentFile).resolve(to.name)
+    }
+
+    private fun getConfigCssFiles() : Iterable<File> {
+        return config
+                .configDir
+                .walk()
+                .filter {
+                    it.isFile && it.extension =="css"
+                }
+                .asIterable()
     }
 }
