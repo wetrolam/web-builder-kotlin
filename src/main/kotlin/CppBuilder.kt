@@ -154,8 +154,10 @@ class CppBuilder(config: Config, file: File) : Builder(config, file) {
 
     // Split C/C++ source code into lines
     private fun parse(cppText: String): List<Line>  {
-        return cppText.lines()
-                .map {
+        return cppText
+                .lineSequence()
+                .toList()
+                .map <String, Line> { it: String ->
                     Line(it)
                 }
     }
