@@ -1,5 +1,6 @@
 package builder
 
+import codeBlock.SqlCodeBlock
 import config.Config
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.constructor.Constructor
@@ -23,7 +24,7 @@ import java.util.*
                 ${assignment}
                 <input id="${checkBoxId}" type="checkbox" class="question-sql">
                 <label for="${checkBoxId}" class="question-sql"></label>
-                <pre class="question-sql"><code>${solution}</code></pre>
+                ${SqlCodeBlock.toHtml(solution, "question-sql")}
             </div>
         """.trimIndent()
     }
