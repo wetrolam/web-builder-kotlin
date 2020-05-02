@@ -1,3 +1,5 @@
+package config
+
 import java.io.File
 
 data class HtmlConfig (

@@ -1,3 +1,4 @@
+import config.Config
 import java.io.File
 
 class HtmlBuilder(config: Config, file: File) : Builder(config, file) {
