@@ -1,6 +1,7 @@
 package builder
 
 import config.Config
+import html.Html
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -124,7 +125,7 @@ private class Line (text: String){
                 html.append("<span class=\"${it.cssClass}\">")
             }
 
-            html.append(encode(content[position]))
+            html.append(Html.encode(content[position]))
 
             repeat(highlighting[position].ends) {
                 html.append("</span>")
@@ -134,16 +135,6 @@ private class Line (text: String){
         return html.toString()
     }
 
-    // Encode reserved HTML characters to character entities
-    private fun encode(letter: Char): String {
-        return when(letter) {
-            '<' -> "&lt;"
-            '>' -> "&gt;"
-            '&' -> "&amp;"
-            '\\'-> "&bsol;"
-            else -> letter.toString()
-        }
-    }
 }
 
 // A builder for several C/C++ source code variants
