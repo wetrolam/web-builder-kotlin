@@ -1,6 +1,7 @@
 import builder.CppBuilder
 import builder.HtmlBuilder
 import builder.MarkdownBuilder
+import builder.SqlQuestionListBuilder
 import config.Config
 import java.io.File
 
@@ -17,6 +18,7 @@ fun main(args: Array<String>) {
         copyConfigurationStaticFiles(config)
         copyStaticFiles(config)
         processCpp(config)
+        buildSqlQuestionList(config)
     }
     catch (e: ArgParserException) {
         System.err.println(e.message)
@@ -129,5 +131,21 @@ private fun processCpp(config: Config) {
                     }
                     assignmentHtmlFile.writeText(assignmentHtml)
                 }
+            }
+}
+
+// Create html files containing a question list from yaml files. The topic of the questions is SQL.
+private fun buildSqlQuestionList(config: Config) {
+    val sourceExtension: String = ".sql.questions.yaml" // composed extension of the source file type
+
+    config.srcDir.walk()
+            .filter {
+                it.isFile && it.name.endsWith(sourceExtension)
+            }
+            .forEach {
+                val html: String = SqlQuestionListBuilder(config, it).toHtml()
+                val distFile: File = File(config.distFileOf(it).path.dropLast(sourceExtension.length) + ".questions.html")
+                distFile.parentFile.mkdirs() // create a directory if not exists
+                distFile.writeText(html)
             }
 }
