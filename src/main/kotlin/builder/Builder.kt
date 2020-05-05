@@ -21,6 +21,7 @@ abstract class Builder (
         html.append("<html>\n")
         html.append("    <head>\n")
         html.append("        <meta charset=\"${config.html.charset}\">\n")
+        html.append("        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">")
         html.append("        <title>${config.html.title} - ${file.nameWithoutExtension}</title>\n")
 
         if(config.html.author !="") {
