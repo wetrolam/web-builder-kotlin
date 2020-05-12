@@ -11,6 +11,10 @@ object SqlCodeBlock {
         COMMENT_SINGLE_LINE("comment", Regex("--(.*)$", RegexOption.MULTILINE)),
         COMMENT_MULTI_LINE("comment", Regex("/\\*(.*?)\\*/", RegexOption.DOT_MATCHES_ALL)),
 
+        STRING("data", Regex("'(.*?)'")),
+        NUMBER("data", Regex("\\b[-+]?\\d+(\\.\\d+([uUlLfF])?)?\\b")), // TODO
+        VALUE("data"),
+
         KEYWORD("keyword")
     }
 
@@ -25,7 +29,10 @@ object SqlCodeBlock {
 
         findAndRemove(notHighlighted, tags, HighlightSegment.COMMENT_SINGLE_LINE);
         findAndRemove(notHighlighted, tags, HighlightSegment.COMMENT_MULTI_LINE);
-        findAndRemoveKeywords(notHighlighted, tags)
+        findAndRemove(notHighlighted, tags, HighlightSegment.STRING);
+        findAndRemove(notHighlighted, tags, HighlightSegment.NUMBER);
+        findAndRemove(notHighlighted, tags, HighlightSegment.KEYWORD, keywords)
+        findAndRemove(notHighlighted, tags, HighlightSegment.VALUE, values)
 
         return getHighlighted(code, tags, blockCssClassName)
     }
@@ -40,12 +47,12 @@ object SqlCodeBlock {
         }
     }
 
-    private fun findAndRemoveKeywords(code: StringBuilder, tags: Array<HighlightList>) {
-        keywords.forEach { keyword: String ->
+    private fun findAndRemove(code: StringBuilder, tags: Array<HighlightList>, highlightSegment: HighlightSegment, names: Array<String>) {
+        names.forEach { keyword: String ->
             val regex: Regex = Regex("\\b${keyword}\\b", RegexOption.IGNORE_CASE)
             val match: Sequence<MatchResult> = regex.findAll(code)
             match.forEach { matchResult: MatchResult ->
-                tags[matchResult.range.start].starts.add(HighlightSegment.KEYWORD)
+                tags[matchResult.range.start].starts.add(highlightSegment)
                 tags[matchResult.range.endInclusive].ends ++
                 code.set(matchResult.range, ' ')
             }
@@ -114,7 +121,7 @@ object SqlCodeBlock {
             "LIKE",
             "LIMIT",
             "NOT",
-            "NULL", // value
+            // "NULL", value
             "OR",
             "ORDER",
             "OUTER",
@@ -136,5 +143,11 @@ object SqlCodeBlock {
             "VALUES",
             "VIEW",
             "WHERE"
+    )
+
+    private val values: Array<String> = arrayOf(
+            "NULL",
+            "TRUE",
+            "FALSE"
     )
 }
