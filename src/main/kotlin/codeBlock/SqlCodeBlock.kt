@@ -7,7 +7,10 @@ import util.*
 
 object SqlCodeBlock {
 
-    private enum class HighlightSegment(val cssClass: String) {
+    private enum class HighlightSegment(val cssClass: String, val regex: Regex = Regex("")) {
+        COMMENT_SINGLE_LINE("comment", Regex("--(.*)$", RegexOption.MULTILINE)),
+        COMMENT_MULTI_LINE("comment", Regex("/\\*(.*?)\\*/", RegexOption.DOT_MATCHES_ALL)),
+
         KEYWORD("keyword")
     }
 
@@ -20,9 +23,21 @@ object SqlCodeBlock {
         val tags: Array<HighlightList> = Array(code.length){ HighlightList() }
         val notHighlighted: StringBuilder = StringBuilder(code);
 
+        findAndRemove(notHighlighted, tags, HighlightSegment.COMMENT_SINGLE_LINE);
+        findAndRemove(notHighlighted, tags, HighlightSegment.COMMENT_MULTI_LINE);
         findAndRemoveKeywords(notHighlighted, tags)
 
         return getHighlighted(code, tags, blockCssClassName)
+    }
+
+    private fun findAndRemove(code: StringBuilder, tags: Array<HighlightList>, highlightSegment: HighlightSegment){
+        val regex: Regex = highlightSegment.regex
+        val match: Sequence<MatchResult> = regex.findAll(code)
+        match.forEach {
+            tags[it.range.start].starts.add(highlightSegment)
+            tags[it.range.endInclusive].ends ++
+            code.set(it.range, ' ')
+        }
     }
 
     private fun findAndRemoveKeywords(code: StringBuilder, tags: Array<HighlightList>) {
