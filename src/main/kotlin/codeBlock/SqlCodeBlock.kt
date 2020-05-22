@@ -101,6 +101,8 @@ object SqlCodeBlock {
             "DESC",
             "DISTINCT",
             "DROP",
+            "ELSE",
+            "END",
             "EXEC",
             "EXISTS",
             "FOREIGN",
@@ -136,6 +138,7 @@ object SqlCodeBlock {
             "SET",
             "SIMILAR",
             "TABLE",
+            "THEN",
             "TO",
             "TOP",
             "TRUNCATE",
@@ -145,6 +148,7 @@ object SqlCodeBlock {
             "UPDATE",
             "VALUES",
             "VIEW",
+            "WHEN",
             "WHERE"
     )
 
