@@ -147,6 +147,7 @@ object SqlCodeBlock {
             "UNIQUE",
             "UNKNOWN",
             "UPDATE",
+            "USING",
             "VALUES",
             "VIEW",
             "WHEN",
