@@ -126,6 +126,7 @@ object SqlCodeBlock {
             "NOT",
             // "NULL", value
             "OFFSET",
+            "ON",
             "OR",
             "ORDER",
             "OUTER",
