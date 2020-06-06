@@ -154,6 +154,7 @@ object SqlCodeBlock {
             "USING",
             "VALUES",
             "VIEW",
+            "WITH",
             "WHEN",
             "WHERE"
     )
