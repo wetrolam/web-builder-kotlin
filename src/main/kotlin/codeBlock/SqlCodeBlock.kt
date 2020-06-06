@@ -125,6 +125,7 @@ object SqlCodeBlock {
             "LEFT",
             "LIKE",
             "LIMIT",
+            "NATURAL",
             "NOT",
             // "NULL", value
             "NULLS",
