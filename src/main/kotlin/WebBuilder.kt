@@ -63,7 +63,7 @@ private fun buildMarkdown(config: Config) {
 private fun copyConfigurationStaticFiles(config: Config){
     config.configDir.walk()
             .filter {
-                it.isFile && it.extension in listOf("css", "png", "gif", "svg")
+                it.isFile && it.extension in listOf("css", "png", "gif", "jpg", "svg")
             }
             .forEach {
                 var relativeFilePath: File = it.relativeTo(config.configDir)
@@ -76,7 +76,7 @@ private fun copyConfigurationStaticFiles(config: Config){
 private fun copyStaticFiles(config: Config) {
     config.srcDir.walk()
             .filter {
-                it.isFile && it.extension in listOf("css", "png", "gif", "svg", "txt", "pdf")
+                it.isFile && it.extension in listOf("css", "png", "gif", "jpg", "svg", "txt", "pdf")
             }
             .forEach {
                 val distFile: File = config.distFileOf(it)
