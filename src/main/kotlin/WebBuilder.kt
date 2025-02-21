@@ -76,7 +76,7 @@ private fun copyConfigurationStaticFiles(config: Config){
 private fun copyStaticFiles(config: Config) {
     config.srcDir.walk()
             .filter {
-                it.isFile && it.extension in listOf("css", "png", "gif", "jpg", "svg", "txt", "pdf")
+                it.isFile && it.extension in listOf("css", "png", "gif", "jpg", "svg", "txt", "pdf", "zip")
             }
             .forEach {
                 val distFile: File = config.distFileOf(it)
